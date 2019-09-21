@@ -162,27 +162,22 @@ public class administrador_de_tareas extends javax.swing.JFrame {
 }
    
     }//GEN-LAST:event_jButton1ActionPerformed
-
+    // Boton de cerrar o matar procesos
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
        String cm=JOptionPane.showInputDialog("Nombre del Proceso:");
  String osName = System.getProperty("os.name");
  String cmd="";
  if(osName.toUpperCase().contains("WIN")){
-	cmd+="taskkill "+cm;
+     
+	cmd+="TASKKILL /IM "+cm+".exe";
  }else{
-	cmd+="taskkill "+cm;
+	cmd+="TASKKILL /IM "+cm+".exe";
  }
  Process hijo;
  try {
 	hijo = Runtime.getRuntime().exec(cmd);
 	hijo.waitFor();
-	if ( hijo.exitValue()==0){
-	 /*JFrame Matando = null;
-         Matando = new Matando();
-         Matando.setVisible(true);*/
-	}else{
-	JOptionPane.showMessageDialog(null,"El gato no pudo matar el proceso!. Excpcion: " + hijo.exitValue()+"n");
-	}
+        JOptionPane.showMessageDialog(null,"Proceso cerrado de exitosamente");
  } catch (IOException e) {
 	JOptionPane.showMessageDialog(null,"Incapaz de matar Proceso");
  } catch (InterruptedException e) {
