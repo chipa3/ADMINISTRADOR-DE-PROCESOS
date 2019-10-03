@@ -1,14 +1,22 @@
-
+/**el programa es un administrador de tareas
+ * programa tiene procedimiento de matar procesos
+ */
 package administrador;
 
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-
+/**
+ *
+ * @author Bryan Mazariegos
+ */
 public class administrador_de_tareas extends javax.swing.JFrame {
  
     private DefaultTableModel modelo;
@@ -16,48 +24,34 @@ public class administrador_de_tareas extends javax.swing.JFrame {
     public administrador_de_tareas() {
         
         initComponents();
+        getContentPane().setBackground(Color.WHITE);
         this.setLocationRelativeTo(null);
         No_procesos.setFocusable(false);
         mostrar_procesos();
     }
-
-   
-    /*   public static List listRunningProcesses() {
-    List<String> processes = new ArrayList<String>();
-    List<String> processes2 = new ArrayList<String>();
-    try {
-    String line;
-    Process p = Runtime.getRuntime().exec("tasklist.exe /nh");
-    BufferedReader input = new BufferedReader
-    (       new InputStreamReader(p.getInputStream()));
-    while ((line = input.readLine()) != null)
-    {
-    if (!line.trim().equals("")) {
-    
-    processes.add(line.substring(0, line.indexOf(" ")));
+//procedimiento de alineacionde columnas
+    private void Alineacion_Columnas(){
+        DefaultTableCellRenderer Alinear = new DefaultTableCellRenderer();
+        Alinear.setHorizontalAlignment(SwingConstants.RIGHT); //establece de que forma se va a alinear las columnas
+        jtabla_datos.getColumnModel().getColumn(1).setCellRenderer(Alinear);//alinea columna 1
+        jtabla_datos.getColumnModel().getColumn(2).setCellRenderer(Alinear);//alinea columna 2
+        jtabla_datos.getColumnModel().getColumn(3).setCellRenderer(Alinear);//alinea columna 3
+        jtabla_datos.getColumnModel().getColumn(4).setCellRenderer(Alinear);//alinea columna 4
     }
-    }
-    input.close();
-    }
-    catch (Exception err) {
-    err.printStackTrace();
-    }
-    return processes;
-    }*/
+    //procedimiento de lectura y de insercion de procesos en tabla
     private void mostrar_procesos(){
     int ICol=0,ICont=0;
         modelo = (DefaultTableModel) jtabla_datos.getModel();
         Object[] Fila = new  Object[5];
         int i=0;
         String StrAuxi = "";
-            
-            
                 try {
             String line;
+            //se realiza la ejecucion de tasklist.exe para leer los procesos en ejecucion
             Process p = Runtime.getRuntime().exec(System.getenv("windir") +"\\system32\\"+"tasklist.exe");
-            BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));//lectura de los datos de buffer obtenidos con tasklist
+            //Guardado en la variable Fila cada dato para cada columna
             while ((line = input.readLine()) != null) {
-                    System.out.println(line);
                 if(i>=4){
                     ICont=0;
                    while(ICont<=4){
@@ -73,20 +67,19 @@ public class administrador_de_tareas extends javax.swing.JFrame {
                 modelo.addRow(Fila);
                 //Asignamos y/o aplicamos el modelo a nuestra tabla
                 jtabla_datos.setModel(modelo);
-                //DefaulTableCellRenderer Alinear = new DefaulTableCellRenderer();
-                
                 }
         i++;
             }
             input.close();
-            No_procesos.setText(String.valueOf(i));
+            Alineacion_Columnas();//llamada a la alineacion de las columnas
+            No_procesos.setText(String.valueOf(i));// se imprimen el numero de procesos en ejecucion
         } catch (Exception err) {
             err.printStackTrace();
         }
         
     }
     
-
+    // procedimiento de limpiaeza de la tabla la restablece de a los parametros inisciales
     void LimpiarTabla(){
         jtabla_datos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -106,23 +99,24 @@ public class administrador_de_tareas extends javax.swing.JFrame {
         });
     }
     
-    public void terminarP(){
+    //procedimiento de matar o finalzar los procesos
+    public void Matar_proceso(){
         modelo = (DefaultTableModel) jtabla_datos.getModel();
+        //se realiza la lectura de los datos de la columna 0(nombre) de la fila selecionada para matar el proceso
         String StrCelda = String.valueOf(modelo.getValueAt(jtabla_datos.getSelectedRow(), 0));
-        if(StrCelda==""){ 
+        if(StrCelda==""){ //si no hay fila selecionada da un error
           JOptionPane.showMessageDialog(null, "ERROR, No se ha selecionado ningun proceso","Error", JOptionPane.INFORMATION_MESSAGE); 
-        }else{
+        }else{//de lo contrario realizara el proceso de matar el proceso
         try {
           Process hijo;
-          hijo = Runtime.getRuntime().exec("taskkill /F /IM "+StrCelda);
-          hijo.waitFor();
+          hijo = Runtime.getRuntime().exec("taskkill /F /IM "+StrCelda);//mata el proceso selecionado junto con sus hijos
+          hijo.waitFor();// finaiza los procesos hijos
         } catch (IOException | InterruptedException ex) {
             Logger.getLogger(administrador_de_tareas.class.getName()).log(Level.SEVERE, null, ex);
         }
         }
                     
 }
-
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -137,7 +131,10 @@ public class administrador_de_tareas extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Administrador de tareas");
+        setBackground(new java.awt.Color(102, 255, 255));
 
+        jtabla_datos.setBackground(new java.awt.Color(255, 236, 194));
+        jtabla_datos.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
         jtabla_datos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -183,32 +180,28 @@ public class administrador_de_tareas extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(36, 36, 36)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel2)
-                        .addGap(35, 35, 35)
-                        .addComponent(No_procesos, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jIniciar_procesos, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(37, 37, 37)
-                        .addComponent(jterminar_procesos, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(337, Short.MAX_VALUE))
+                .addGap(34, 34, 34)
+                .addComponent(jLabel2)
+                .addGap(18, 18, 18)
+                .addComponent(No_procesos, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(27, 27, 27)
+                .addComponent(jIniciar_procesos, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 30, Short.MAX_VALUE)
+                .addComponent(jterminar_procesos, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
             .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 454, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(32, 32, 32)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jIniciar_procesos)
-                    .addComponent(jterminar_procesos))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 529, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(No_procesos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18))
+                    .addComponent(No_procesos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jIniciar_procesos)
+                    .addComponent(jterminar_procesos))
+                .addContainerGap())
         );
 
         pack();
@@ -216,54 +209,18 @@ public class administrador_de_tareas extends javax.swing.JFrame {
 
     private void jIniciar_procesosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jIniciar_procesosActionPerformed
         
-        LimpiarTabla();
-        mostrar_procesos();
-        /*
-        List<String> processes = listRunningProcesses();
-        String result = "";
-        String result2 = "";
-        Iterator<String> it = processes.iterator();
-        int i = 0;
-        this.No_procesos.setText(String.valueOf(processes.size()));
-        while (it.hasNext()) {
-        result += it.next();
-        i++;
-        if (i==1) {
-        Object[] s={result};
-        mt.addRow(s);
-        result="";
-        i = 0;
-        }
-        }*/
+        LimpiarTabla();//limpia la tabla antes de insertr todos los procesos
+        mostrar_procesos();//llama al procedimiento de mostrar procesos y los coloca en la tabla
    
     }//GEN-LAST:event_jIniciar_procesosActionPerformed
     // Boton de cerrar o matar procesos
     private void jterminar_procesosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jterminar_procesosActionPerformed
        
-        terminarP();
-        LimpiarTabla();
-        mostrar_procesos();
-      /* String cm=JOptionPane.showInputDialog("Nombre del Proceso:");
- String osName = System.getProperty("os.name");
- String cmd="";
- if(osName.toUpperCase().contains("WIN")){
-     
-	cmd+="TASKKILL /F /IM "+cm+".exe"+" /T";
- }else{
-	//cmd+="TASKKILL /F /IM "+cm+".exe"+" /T";
- }
- Process hijo;
- try {
-	hijo = Runtime.getRuntime().exec(cmd);
-	hijo.waitFor();
-        JOptionPane.showMessageDialog(null,"Proceso cerrado de exitosamente");
- } catch (IOException e) {
-	JOptionPane.showMessageDialog(null,"Incapaz de matar Proceso");
- } catch (InterruptedException e) {
-	JOptionPane.showMessageDialog(null,"Incapaz de matar Proceso");
+        Matar_proceso();//llama al procedimiento de terminar un proceso
+        LimpiarTabla();//limpia la tabla antes de colocar los procesos despues de haber terminado uno
+        mostrar_procesos();//coloca de nuevo los procesos que quedaron sin los que se acaban de terminar
     }//GEN-LAST:event_jterminar_procesosActionPerformed
-    
-    */}
+
     private void No_procesosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_No_procesosActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_No_procesosActionPerformed
